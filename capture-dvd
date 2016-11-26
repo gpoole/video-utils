@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# https://www.mplayerhq.hu/DOCS/HTML/en/menc-feat-vcd-dvd.html
+# http://www.digitalfaq.com/guides/video/introduction-author-burn.htm
+# http://dvd-hq.info/bitrate_calculator.php
+
+if [ -z "$1" ]; then
+	echo "Usage: `basename $0` output [time]"
+	exit
+fi
+
+if ! [ -z "$2" ]; then
+	TIME="-t $2"
+fi
+
+# 503 
+
+# ffmpeg -f avfoundation -video_device_index 1 -audio_device_index 1 -framerate 60 -video_size 640x480 -i "default" -pix_fmt yuv420p -f dvd -vb 9.8M -vbv 1835k -vf "scale=720:576, hqdn3d=4.0:3.0:6.0:4.5" -acodec ac3_fixed -ab 192k -ar 44100 "$1"
+# crop=640:310,pad=640:480:0:85,scale=720:576
+#ffmpeg -f avfoundation -video_device_index 0 -audio_device_index 0 -framerate 60 -video_size 640x480 -i "default" -target pal-dvd -vf "hqdn3d=4.0:3.0:6.0:4.5" $TIME "$1"
+ffmpeg -f avfoundation -audio_device_index 2 -framerate 60 -video_size 640x480 -i "default" -target pal-dvd -vf "hqdn3d=4.0:3.0:6.0:4.5" $TIME "$1"
+

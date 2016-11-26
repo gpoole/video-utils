@@ -1,0 +1,40 @@
+#!/bin/bash -x
+
+# Creates animated gif images from video files by splicing a section out of the video file at the given framerate
+# and dimensions using ffmpeg, gifscile and imagemagick.
+
+# video gif start_time duration framerate [width height]
+
+if [ -z "$4" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+	echo "Usage: `basename $0` in_file out_file start_time duration out_framerate [width height]"
+	echo
+	echo "Convert an input video file to an animted gif"
+	echo
+	echo "  in_file:       Source video file (to feed through ffmpeg)"
+	echo "  out_file:      Output gif file"
+	echo "  start_time:    Timecode to splice from (following ffmpeg timecode format: hh:mm:ss.mmm)"
+	echo "  duration:      Duration to splice to from start_time, in seconds (e.g. '0.5' for half a second)"
+	echo "  out_framerate: Framerate for output gif (e.g. '25' for 25fps)"
+	echo "  width:         Width (in pixels) of the output gif (optional)"
+	echo "  height:        Height (in pixels) of the output gif (optional)"
+	exit
+fi
+
+# Working directory for intermediate files (individual frames etc)
+working=/tmp/convert-$RANDOM
+
+mkdir -p $working
+if [ ! -z "$6" ]; then
+	EXTRAS="-s ${6}"
+fi
+# EXTRAS="$EXTRAS -vf crop=7/10*in_w"
+ffmpeg  -ss "$3" -i "$1" -r "$5" -vf "setpts=(1/4)*PTS" -t "$4" $EXTRAS $working/output%05d.png
+# open $working
+# exit
+for file in $working/*.png; do
+	convert $file -layers OptimizePlus -alpha remove -quality 100% +dither $working/`basename $file .png`.gif
+done
+delay=$(printf "%.0f\n" `bc -l <<< "scale = 10; 100/$5"`)
+gifsicle --loopcount=forever --delay $delay $working/*.gif > $working/out.gif
+convert -layers Optimize $working/out.gif "$2"
+rm -Rf $working

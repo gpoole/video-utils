@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# ffmpeg -f avfoundation -video_device_index 1 -audio_device_index 1 -framerate 60 -video_size 640x480 -i "default" -vf "scale=720:576" -vcodec libx264 -tune zerolatency -b 900k -f mpegts udp://192.168.0.3:6666
+# ffmpeg -f avfoundation -video_device_index 0 -audio_device_index 0 -framerate 60 -video_size 640x480 -i "default" -tune zerolatency -vb 1024k -vcodec libx264 -r 25 -acodec libvo_aacenc -ab 512k -b:v 512k -minrate 1.5M -maxrate 2.5M -f mpegts udp://192.168.0.3:6666
+ffmpeg -f avfoundation -video_device_index 0 -audio_device_index 2 -framerate 60 -i "default" -video_size 640x480 -c:v libx264 -r 25 -acodec libvo_aacenc -ab 128k -preset fast -buffer_size 8M -pix_fmt yuv420p -acodec libvo_aacenc -ab 512k -b:v 512k -minrate 1.5M -maxrate 2.5M -s 720:576 -threads 0 -f flv "$1"
+
+# ffmpeg -f avfoundation -video_device_index 0 -audio_device_index 0 -framerate 60 -video_size 640x480 -i "default" -target pal-dvd  -minrate 1.5M -maxrate 2.5M -threads 0 -f flv "$1"

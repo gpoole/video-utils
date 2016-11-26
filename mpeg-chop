@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ -z "$4" ]; then
+	echo "Usage: `basename $0` start in end out"
+	exit
+fi
+
+START="$1"
+IN="$2"
+END="$3"
+OUT="$4"
+ffmpeg -i "$IN" -ss $START -t $END -f dvd -c copy "$OUT"

@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+start_code=ARGV[0]
+input=ARGV[1]
+end_code=ARGV[2]
+output=ARGV[3]
+
+def code_to_mins(code)
+	code_parts = code.split(":")
+	return (code_parts[0].to_i * 60) + code_parts[1].to_i + (code_parts[2].to_f / 60)
+end
+
+def mins_to_code(mins)
+	return "#{(mins/60).floor.to_s.rjust(2,"0")}:#{(mins%60).floor.to_s.rjust(2,"0")}:#{((mins - mins.floor) * 60).to_i.to_s.rjust(2,"0")}.00"
+end
+
+start_mins = code_to_mins(start_code)
+end_mins = code_to_mins(end_code) + start_mins
+
+`ffmpeg -i '#{input}' -ss #{mins_to_code(start_mins)} -t #{mins_to_code(end_mins)} -f dvd -c copy '#{output}'`

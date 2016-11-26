@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ -z "$3" ]; then
+	echo "Usage: `basename $0` audio video output"
+	exit
+fi
+
+ffmpeg -i $1 -i $2 -acodec copy -vcodec copy -shortest $3
